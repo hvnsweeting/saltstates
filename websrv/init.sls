@@ -5,8 +5,6 @@ apache2:                 # ID declaration
     - running
     - watch:
         - file: /etc/apache2/sites-available/default
-        - file: /etc/apache2/conf.d/phpmyadmin.conf
-
 
 /etc/apache2/sites-available/default:
     file:
