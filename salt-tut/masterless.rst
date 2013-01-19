@@ -16,8 +16,12 @@ then run::
 
     salt-call state.highstate
 
+Or you can use `--local` option if you did not change your minion config::
 
-You can read `more` from main doc
+    salt-call --local state.highstate
+
+So my best solution is the latter, it no need to change anything.
+
+Read `more` from main doc::
 
 http://salt.readthedocs.org/en/latest/topics/tutorials/standalone_minion.html
-
