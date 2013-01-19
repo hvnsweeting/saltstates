@@ -5,9 +5,11 @@ Salt 0.11
 ----------
 
 Assume that you know how to run salt-master and salt-minion, create states.
-http://salt.readthedocs.org/en/latest/topics/tutorials/standalone_minion.html
+
+.. _Standalone Minion: http://salt.readthedocs.org/en/latest/topics/tutorials/standalone_minion.html
 
 You can run salt-minion locally, without a master.
+
 Edit `/etc/salt/minion`::
 
     file_client: local
