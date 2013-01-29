@@ -6,6 +6,12 @@ glance:
     pkg: 
         - installed
 
+nova:
+    pkg:
+        - installed
+        - names: 
+            - nova-compute
+            - nova-network
 
 glance-api:
     service:
@@ -25,6 +31,13 @@ glance-registry:
     require:
         - pkg: glance
 
+nova-network:
+    service:
+        - running
+    watch:
+        - file: /etc/nova/nova.conf
+    require:
+        - pkg: nova
 
 /etc/glance/glance-api.conf:
     file:
@@ -45,3 +58,26 @@ glance-registry:
     file:
         - managed
         - source: salt://essex/glance-registry-paste.ini
+
+/etc/nova/api-paste.ini:
+    file:
+        - managed
+        - source: salt://essex/api-paste.ini
+
+/etc/nova/nova.conf:
+    file:
+        - managed
+        - source: salt://essex/nova.conf
+
+/tmp/sample_data.sh:
+    file:
+        - managed
+        - source: salt://openstack/sample_data.sh
+        - user: root 
+        - group: root
+        - mode: 744
+    cmd:
+        - run
+        - require:
+            - file: /tmp/sample_data.sh
+
