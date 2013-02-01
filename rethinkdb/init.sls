@@ -5,3 +5,8 @@ salt://rethinkdb/add.sh:
 rethinkdb:
     pkg:
         - installed
+
+py-rethinkdb:
+    pip:
+        - installed
+        - name: rethinkdb
