@@ -1,4 +1,4 @@
-debconf:                 # ID declaration
+debconf-utils:                 # ID declaration
     pkg:                  # state declaration
     - installed         # function declaration
 
@@ -11,4 +11,4 @@ mysql:
         - mysql-client
         - automysqlbackup
     - require: 
-        - pkg: debconf
+        - pkg: debconf-utils
