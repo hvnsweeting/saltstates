@@ -6,3 +6,4 @@ python:
         - python-pip
         - python-virtualenv
         - python-mysqldb
+        - python-dev 
