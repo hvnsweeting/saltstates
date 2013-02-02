@@ -7,3 +7,5 @@ core:
             - vim
             - ccze
             - git
+            - iftop
+            - byobu
