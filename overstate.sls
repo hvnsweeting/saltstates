@@ -1,3 +1,8 @@
+ceph-client:
+    match: ubun3
+    sls:
+        - ceph.client
+
 ceph-server:
     match: ubun2
     sls:
@@ -8,4 +13,5 @@ ceph-admin:
     sls:
         - ceph.admin
     require:
+        - ceph-client
         - ceph-server
