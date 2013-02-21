@@ -18,7 +18,6 @@ usage
 this state not provide a full automatically deploy yet, you should make sure
 to do bellow steps:
 
-- create a ssh key for root user on admin host. Use its pubkey to replace 
-pubkeys/cephadmin.pub
+    - create a ssh key for root user on admin host. Use its pubkey to replace pubkeys/cephadmin.pub
+    - edit `ceph.conf` and `overstate.sls` to meet your need
 
-- edit `ceph.conf` and `overstate.sls` to meet your need
