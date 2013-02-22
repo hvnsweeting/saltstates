@@ -19,12 +19,13 @@ untar:
     cmd.run:
         - name: 'cd /tmp && tar xzf /tmp/mit-scheme.tar.gz'
         - unless: test -d /tmp/mit-scheme-9.1.1
+        - require:
+            - file: mit-scheme
 
 configure:
     cmd.run:
         - name: 'cd /tmp/mit-scheme-9.1.1/src/ && ./configure'
         - require:
-            - file: mit-scheme
             - pkg: buildtools
             - cmd: untar
         - unless: 'which mit-scheme'
