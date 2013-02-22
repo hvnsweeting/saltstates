@@ -1,6 +1,6 @@
 mit-scheme:
     file.managed:
-        - name: /tmp/mit-scheme.tar.gz
+        - name: /usr/local/src/mit-scheme.tar.gz
     {% if grains['cpuarch'] == 'x86_64' %}
         - source: http://ftp.gnu.org/gnu/mit-scheme/stable.pkg/9.1.1/mit-scheme-9.1.1-x86-64.tar.gz
         - source_hash: md5=268cb5ac97646f34742828ebc370586d
@@ -17,21 +17,16 @@ buildtools:
 
 untar:
     cmd.run:
-        - name: 'cd /tmp && tar xzf /tmp/mit-scheme.tar.gz'
+        - name: tar xzf /usr/local/src/mit-scheme.tar.gz -C /tmp
         - unless: test -d /tmp/mit-scheme-9.1.1
         - require:
             - file: mit-scheme
 
-configure:
+install:
     cmd.run:
-        - name: 'cd /tmp/mit-scheme-9.1.1/src/ && ./configure'
+        - name: ./configure && make compile-microcode && make install
+        - cwd: /tmp/mit-scheme-9.1.1/src/ 
         - require:
             - pkg: buildtools
             - cmd: untar
-        - unless: 'which mit-scheme'
-
-cd /tmp/mit-scheme-9.1.1/src && make compile-microcode && make install:
-    cmd.run:
-        - require:
-            - cmd: configure
         - unless: 'which mit-scheme'
