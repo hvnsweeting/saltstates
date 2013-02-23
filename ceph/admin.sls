@@ -12,16 +12,19 @@ deploycfg:
             - file: /etc/ceph/ceph.conf
             - file: /var/lib/ceph
 
-salt://ceph/copykeyring.sh:
-    cmd:
-        - script
-        - require:
-            - cmd: deploycfg
-            - ssh_auth: sshkey
-
 /root/.ssh/id_rsa:
     file.managed:
         - source: salt://ceph/id_rsa
+        - mode: 600
+
+salt://ceph/copykeyring.sh: 
+    cmd:
+        - script
+        - template: jinja
+        - require:
+            - cmd: deploycfg
+            - ssh_auth: sshkey
+            - file: /root/.ssh/id_rsa
 
 restart:
     cmd.run:
