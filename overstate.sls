@@ -15,3 +15,11 @@ ceph-admin:
     require:
         - ceph-client
         - ceph-server
+
+# copy keyring to all server and client
+copy-keyring:
+    match: ubun1
+    sls:
+        - ceph.keyring
+    require:
+        - ceph-admin
