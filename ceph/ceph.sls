@@ -22,3 +22,11 @@ sshkey:
         - user: root
         # ssh-pubkey you will need to access to all servers/clients
         - source: salt://pubkeys/cephadmin.pub
+
+
+/etc/ceph/ceph.conf:
+    file.managed:
+        - source: salt://ceph/ceph.conf
+        - template: jinja
+        - require:
+            - pkg: ceph

@@ -1,7 +1,7 @@
 ceph-client:
     match: ubun3
     sls:
-        - ceph.client
+        - ceph.ceph
 
 ceph-server:
     match: ubun2
