@@ -8,11 +8,6 @@ extend:
             - watch:
                 - file: /etc/ceph/ceph.conf
 
-/etc/ceph/ceph.conf:
-    file.managed:
-        - source: salt://ceph/ceph.conf
-        - template: jinja
-
 /var/lib/ceph:
     file.directory:
         #TODO this create redundant directory, need a better way
