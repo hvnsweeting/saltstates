@@ -7,11 +7,11 @@ used for only 1 host that will do deploy (run mkcephfs)
 
 server.sls
 --------
-for all server that run ceph's service (osd, mon, mds)
+for all servers that run ceph's service (osd, mon, mds)
 
-client.sls
+ceph.sls
 --------
-for clients 
+for clients , base for others
 
 usage
 ------
@@ -19,5 +19,5 @@ this state not provide a full automatically deploy yet, you should make sure
 to do bellow steps:
 
     - create a ssh key (WITHOUT passphrase) for root user on admin host. Use its pubkey to replace pubkeys/cephadmin.pub
-    - edit `ceph.conf` and `overstate.sls` to meet your need
-
+    - edit `ceph.conf` and `server.sls` for create appropriate directory (mds, mon, osd)
+    - change `overstate.sls` to meet your need
