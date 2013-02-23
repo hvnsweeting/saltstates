@@ -21,7 +21,7 @@ sshkey:
         - present
         - user: root
         # ssh-pubkey you will need to access to all servers/clients
-        - source: salt://pubkeys/cephadmin.pub
+        - source: salt://ceph/cephadmin.pub
 
 
 /etc/ceph/ceph.conf:

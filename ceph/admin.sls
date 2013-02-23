@@ -19,6 +19,10 @@ salt://ceph/copykeyring.sh:
             - cmd: deploycfg
             - ssh_auth: sshkey
 
+/root/.ssh/id_rsa:
+    file.managed:
+        - source: salt://ceph/id_rsa
+
 restart:
     cmd.run:
         - name: 'service ceph -a restart'

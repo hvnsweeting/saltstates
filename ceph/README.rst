@@ -18,7 +18,7 @@ usage
 this state not provide a full automatically deploy yet, you should make sure
 to do bellow steps:
 
-    - create a ssh key (WITHOUT passphrase) for root user on admin host. Use its pubkey to replace pubkeys/cephadmin.pub
+    - create a ssh key pair (WITHOUT passphrase). Replace id_rsa, cephadmin.key with your new private and public key arcordingly
     - edit `ceph.conf` and `server.sls` for create appropriate directory (mds, mon, osd)
     - edit `copykeyring.sh`, add IP of all your server/client hosts
     - change `overstate.sls` to meet your need
