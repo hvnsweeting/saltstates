@@ -20,4 +20,5 @@ to do bellow steps:
 
     - create a ssh key (WITHOUT passphrase) for root user on admin host. Use its pubkey to replace pubkeys/cephadmin.pub
     - edit `ceph.conf` and `server.sls` for create appropriate directory (mds, mon, osd)
+    - edit `copykeyring.sh`, add IP of all your server/client hosts
     - change `overstate.sls` to meet your need
