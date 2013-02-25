@@ -1,0 +1,2 @@
+zabbix-agent:
+    pkg.installed
