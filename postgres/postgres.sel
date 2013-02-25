@@ -1,0 +1,10 @@
+zabbix-server-pgsql     zabbix-server-pgsql/pgsql/app-pass      password        rootpasswd!@#$
+zabbix-server-pgsql     zabbix-server-pgsql/app-password-confirm        password       rootpasswd!@#$
+zabbix-server-pgsql     zabbix-server-pgsql/dbconfig-install    boolean true 
+
+# PostgreSQL application password for zabbix-frontend-php:
+zabbix-frontend-php     zabbix-frontend-php/database-type       select  pgsql # NOTE change to mysql if you use mysql
+zabbix-frontend-php     zabbix-frontend-php/pgsql/app-pass      password        rootpasswd!@#$
+zabbix-frontend-php     zabbix-frontend-php/mysql/app-pass      password        rootpasswd!@#$
+zabbix-frontend-php     zabbix-frontend-php/password-confirm    password        rootpasswd!@#$
+
