@@ -10,8 +10,15 @@ mongodb:
     - require:
       - pkgrepo: mongodeb
 
-  service:
-    - running
+  service.running:
     - enable: True
     - require:
       - pkg: mongodb
+
+  file.managed:
+    - name: /etc/logrotate.d/mongodb
+    - template: jinja
+    - user: root
+    - group: root
+    - mode: 440
+    - source: salt://mongodb/logrotate.jinja2
