@@ -6,7 +6,7 @@ uwsgitop:
     - require:
       - pkg: python-pip
 
-depends:
+pip-depends:
   pkg.installed:
     - names:
       - build-essential
@@ -14,8 +14,7 @@ depends:
       - libxml2-dev
 
 uwsgi:
-  pip.latest:
+  pip.installed:
     - require:
       - pkg: python-pip
-      - pkg: depends
-
+      - pkg: pip-depends
