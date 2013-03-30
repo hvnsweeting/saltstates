@@ -1,5 +1,5 @@
-{% set version = '0.20.5'%}
-{% set checksum = 'md5=e244c5a39515983ba81006a3186843f4' %}
+{% set version = '0.20.6'%}
+{% set checksum = 'md5=4dd464946a56525556c7810596bf970e' %}
 
 /etc/default/elasticsearch:
   file:
@@ -10,7 +10,7 @@
     - mode: 440
     - source: salt://elasticsearch/default.jinja2
     - require:
-      - pkg_file: elasticsearch
+      - pkg: elasticsearch
 
 /etc/elasticsearch/logging.yml:
   file:
@@ -21,7 +21,7 @@
     - mode: 440
     - source: salt://elasticsearch/logging.jinja2
     - require:
-      - pkg_file: elasticsearch
+      - pkg: elasticsearch
 
 /etc/elasticsearch/elasticsearch.yml:
   file:
@@ -51,13 +51,13 @@ jre7_headless:
 
 elasticsearch:
   file.managed:
-    - name: /usr/local/src/elasticsearch-{{ pillar['elasticsearch']['version'] }}.deb
-    - source: http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-{{ pillar['elasticsearch']['version'] }}.deb
-    - source_hash: md5={{ pillar['elasticsearch']['md5'] }}
+    - name: /usr/local/src/elasticsearch-{{ version }}.deb
+    - source: http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-{{ version }}.deb
+    - source_hash: {{ checksum }}
 
   pkg.installed:
     - sources:
-      - elasticsearch: /usr/local/src/elasticsearch-{{ pillar['elasticsearch']['version'] }}.deb
+      - elasticsearch: /usr/local/src/elasticsearch-{{ version }}.deb
     - require:
       - file: elasticsearch
   service:
