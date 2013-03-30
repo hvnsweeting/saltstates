@@ -1,4 +1,4 @@
-message_do_not_modify = "managed file salt, manual changes might be lost"
+me=sage_do_not_modify: "managed file salt, manual changes might be lost"
 
 elasticsearch:
   cluster:
