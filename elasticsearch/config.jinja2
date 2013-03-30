@@ -1,0 +1,32 @@
+# {{ pillar['message_do_not_modify'] }}
+
+{% set es = pillar['elasticsearch'] %}
+bootstrap:
+  mlockall: true
+
+cluster:
+  name: {{ es['cluster']['name'] }}
+  routing:
+    allocation:
+      node_concurrent_recoveries: 2
+
+{#
+http:
+  enabled: {{ es['cluster']['nodes'][grains['id']]['http']|default(http) }}
+#}
+
+node:
+  name: {{ es['cluster']['nodes'][grains['id']]['name']|default(grains['id']) }}
+  master: {{ es['cluster']['nodes'][grains['id']]['master']|default(master) }}
+  data: {{ es['cluster']['nodes'][grains['id']]['data']|default(data) }}
+
+discovery:
+  zen:
+    ping:
+      multicast:
+        enabled: false
+      unicast:
+        hosts: [
+{%- for node in es['cluster']['nodes'] -%}
+"{{ es['cluster']['nodes'][node]['private'] }}"{% if not loop.last %}, {% endif -%}
+{%- endfor %}]

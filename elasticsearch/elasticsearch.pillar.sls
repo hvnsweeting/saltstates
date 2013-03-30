@@ -1,4 +1,10 @@
+message_do_not_modify = "managed file salt, manual changes might be lost"
+
 elasticsearch:
-  md5: e244c5a39515983ba81006a3186843f4
-  version: 0.20.5
+  cluster:
+    name: graylog2
+    {{ grains['id'] }}: 
+      private: 127.0.0.1:9300
+      master: true
+      data: true
 
