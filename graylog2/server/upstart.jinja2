@@ -1,0 +1,13 @@
+# {{ pillar['message_do_not_modify'] }}
+# ubuntu upstart script for graylog2-server
+
+start on (filesystem and net-device-up IFACE=eth0)
+stop on runlevel [!2345]
+
+nice 10
+respawn
+
+script
+  exec java -server -jar /usr/local/graylog2-server-{{ version }}/graylog2-server.jar --pidfile /var/run/graylog2.pid >> /var/log/graylog2/server.log
+  emit graylog2-server_running
+end script
