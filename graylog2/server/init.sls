@@ -58,7 +58,7 @@ graylog2-server:
     - source_hash: {{ checksum }}
   cmd:
     - run
-    - tar xzf /usr/local/src/graylog2-server-{{ version }}.tar.gz -C /usr/local
+    - name: tar xzf /usr/local/src/graylog2-server-{{ version }}.tar.gz -C /usr/local
     - unless: test -d /usr/local/graylog2-server-{{ version }}
     - require:
       - file: graylog2-server
@@ -74,7 +74,7 @@ graylog2-server:
       - file: graylog2-server_upstart
       - file: graylog2-server
       - file: /etc/graylog2-elasticsearch.yml
-      - archive: graylog2-server
+      - cmd: graylog2-server
       - cmd: graylog2_email_output_plugin
     - require:
       - file: /var/log/graylog2
@@ -87,5 +87,5 @@ graylog2_email_output_plugin:
     - cwd: {{ server_root_dir }}
     - unless: test -e {{ server_root_dir }}/plugin/outputs/org.graylog2.emailoutput.output.EmailOutput_gl2plugin.jar
     - require:
-      - archive: graylog2-server
+      - cmd: graylog2-server
       - service: mongodb
