@@ -1,3 +1,5 @@
+include:
+  - java
 {% set version = '0.20.6'%}
 {% set checksum = 'md5=4dd464946a56525556c7810596bf970e' %}
 
@@ -44,10 +46,6 @@
     - symlink
     - target: /usr/lib/jvm/java-7-openjdk-i386
 {% endif %}
-jre7_headless:
-  pkg:
-    - latest
-    - name: openjdk-7-jre-headless
 
 elasticsearch:
   file.managed:
