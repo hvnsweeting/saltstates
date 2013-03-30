@@ -23,28 +23,9 @@
     - require:
       - pkg_file: elasticsearch
 
-{% if grains['cpuarch'] == 'i686' %}
-/usr/lib/jvm/java-7-openjdk:
-  file:
-    - symlink
-    - target: /usr/lib/jvm/java-7-openjdk-i386
-{% endif %}
-
-elasticsearch:
-  pkg:
-    - latest
-    - name: openjdk-7-jre-headless
-  pkg_file:
-    - installed
-    - name: elasticsearch
-    - version: {{ version }}
-    - source: http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-{{ version }}.deb
-    - source_hash: {{ checksum }}
-    - require:
-      - pkg: elasticsearch
+/etc/elasticsearch/elasticsearch.yml:
   file:
     - managed
-    - name: /etc/elasticsearch/elasticsearch.yml
     - template: jinja
     - user: elasticsearch
     - group: elasticsearch
@@ -55,15 +36,38 @@ elasticsearch:
       master: 'true'
       data: 'true'
     - require:
-      - pkg_file: elasticsearch
+      - pkg: elasticsearch
+
+{% if grains['cpuarch'] == 'i686' %}
+/usr/lib/jvm/java-7-openjdk:
+  file:
+    - symlink
+    - target: /usr/lib/jvm/java-7-openjdk-i386
+{% endif %}
+jre7_headless:
+  pkg:
+    - latest
+    - name: openjdk-7-jre-headless
+
+elasticsearch:
+  file.managed:
+    - name: /usr/local/src/elasticsearch-{{ pillar['elasticsearch']['version'] }}.deb
+    - source: http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-{{ pillar['elasticsearch']['version'] }}.deb
+    - source_hash: md5={{ pillar['elasticsearch']['md5'] }}
+
+  pkg.installed:
+    - sources:
+      - elasticsearch: /usr/local/src/elasticsearch-{{ pillar['elasticsearch']['version'] }}.deb
+    - require:
+      - file: elasticsearch
   service:
     - running
     - enable: True
     - watch:
       - file: /etc/default/elasticsearch
       - file: /etc/elasticsearch/logging.yml
-      - file: elasticsearch
-      - pkg_file: elasticsearch
+      - file: /etc/elasticsearch/elasticsearch.yml
+      - pkg: jre7_headless
       - pkg: elasticsearch
 {% if grains['cpuarch'] == 'i686' %}
       - file: /usr/lib/jvm/java-7-openjdk
