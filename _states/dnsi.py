@@ -2,13 +2,15 @@
 
 """
 DNSimple state
-requires:
-https://github.com/KristianOellegaard/dnsimple-api/tree/updated-dnsimple-api
+requires: requests==1.2.0
 """
 
 import json
 import logging
-import requests as req
+try:
+    import requests
+except ImportError:
+    requests = None
 
 
 log = logging.getLogger(__name__)
@@ -19,7 +21,7 @@ COMMON_HEADER = {'Accept':'application/json',
 TOKEN = 'NF1IS6a4w7WFGoTjV5bb'
 
 def auth_session(email, token):
-    ses = req.Session()
+    ses = requests.Session()
     ses.auth = (email, token)
     ses.headers.update(COMMON_HEADER)
     ses.headers.update({'X-DNSimple-Token': email + ":" + token})
@@ -94,8 +96,13 @@ def existed(domain, email, token, record):
     elif resp.status_code == 400:
         ret['result'] = False
         ret['comment'] = "{0}".format(resp.content)
+    elif resp.status_code == 404:
+        if "Couldn\'t find Domain with name" in resp.content:
+            ret['result'] = False
+            ret['comment'] = "Couldn't find domain {0}".format(domain)
     else:
-        raise Exception("{0} {1}".format(resp.status_code, resp.content))
+        ret['result'] = False
+        ret['comment'] = "{0} {1}".format(resp.status_code, resp.content)
     return ret
 
 def records_exists(domain, email, token, records):
@@ -109,16 +116,3 @@ def records_exists(domain, email, token, records):
             'changes': {},
             'result': True,
             'comment': ''}
-
-if __name__ == "__main__":
-    EMAIL = "hvnsweeting@gmail.com"
-    domain = 'hwngxxy.info'
-    print created(domain, EMAIL, TOKEN)
-    record = { "name": "", 
-            "record_type": "MX",
-            "content": "mail.hwngxxy.info",
-            #"ttl": 3600, 
-            #"prio": 10 
-            }
-
-    print existed(domain, EMAIL, TOKEN, record)
