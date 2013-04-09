@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 COMMON_HEADER = {'Accept':'application/json',
                  'Content-Type': 'application/json',
                  }
-TOKEN = 'NF1IS6a4w7WFGoTjV5bb'
+TOKEN = 'em3BJZR7xyokvKNlF9f'
 
 def auth_session(email, token):
     ses = requests.Session()
@@ -69,7 +69,7 @@ def created(name, email, token):
         raise Exception("{0} {1}".format(resp.status_code, resp.content))
     return ret
 
-def existed(domain, email, token, record):
+def existed(domain, email, token, nrecord):
     ret = {'name': 'existed',
             'changes': {},
             'result': False,
@@ -77,19 +77,29 @@ def existed(domain, email, token, record):
 
     path = "/domains/{0}/records".format(domain)
     ses = auth_session(email, token)
-    data = {"record": {"name": record.get('name', ''),
-                       "record_type": record.get('record_type'),
-                       "content": record.get('content'),
-                       "ttl": record.get('ttl', 3600),
-                       "prio": record.get('prio', 10),}
+    data = {"record": {"name": nrecord.get('name', ''),
+                       "record_type": nrecord.get('record_type'),
+                       "content": nrecord.get('content'),
+                       "ttl": nrecord.get('ttl', 3600),
+                       "prio": nrecord.get('prio', 10),}
            }
 
     resp = ses.post(BASE_URL + path, json.dumps(data))
+    print resp.status_code, resp.content
     if resp.status_code == 201:
-        ret['changes'][record.get('content')] = "created"
+        ret['changes'][nrecord.get('content')] = "created"
         ret['result'] = True
     elif resp.status_code == 422:
         comment = 'already exists'
+        getresp = ses.get(BASE_URL + path)
+        recs = json.loads(getresp.content)
+        recs = [i['record'] for i in recs]
+        for rec in recs:
+            if rec['name'] == nrecord['name'] and rec['content'] == nrecord['content']:
+                path = "/domains/{0}/records/{1}".format(domain, rec['id'])
+                putresp = ses.put(BASE_URL + path, data=json.dumps(data))
+                print putresp.status_code, putresp.content
+                break
         if comment in resp.content:
             ret['comment'] = comment
             ret['result'] = True
