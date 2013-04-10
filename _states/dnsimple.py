@@ -1,9 +1,9 @@
 #-*- encoding: utf-8 -*-
 
-"""
+'''
 DNSimple state
 requires: requests==1.2.0
-"""
+'''
 
 import json
 import logging
@@ -15,10 +15,18 @@ except ImportError:
 
 log = logging.getLogger(__name__)
 
-COMMON_HEADER = {'Accept':'application/json',
+COMMON_HEADER = {'Accept': 'application/json',
                  'Content-Type': 'application/json',
                  }
-TOKEN = 'em3BJZR7xyokvKNlF9f'
+BASE_URL = 'https://dnsimple.com'
+
+
+def __virtual__():
+    '''Verify requests is installed.'''
+    if requests is None:
+        return False
+    return 'dnsimple'
+
 
 def auth_session(email, token):
     ses = requests.Session()
@@ -27,21 +35,6 @@ def auth_session(email, token):
     ses.headers.update({'X-DNSimple-Token': email + ":" + token})
     return ses
 
-BASE_URL = 'https://dnsimple.com'
-
-
-def _is_available(domain, email, token):
-    path = '/domains/%s/check' % domain
-    ses = auth_session(email, token)
-    resp = ses.get(BASE_URL + path)
-    if resp.status_code == 200:
-        return False
-    elif resp.status_code == 404:
-        # 404 mean domain do not exist => avail
-        return True
-    else:
-        raise Exception("{0} {1} {2} {3}".format(BASE_URL,
-                        path, resp.status_code, resp.content))
 
 def created(name, email, token):
     domain = name
@@ -57,33 +50,43 @@ def created(name, email, token):
     log.info("{0} {1}".format(resp.status_code, resp.content))
     if resp.status_code == 201:
         ret['result'] = True
-        ret['changes']['{0}'.format(domain)] = "Created in your account"
+        ret['changes'][domain] = "Created in your account"
     elif resp.status_code == 400:
         comment = "already in your account."
         if comment in resp.content:
             ret['result'] = True
-            ret['comment'] = "{0}".format(comment)
+            ret['comment'] = comment
     elif resp.status_code == 401:
         ret['result'] = False
     else:
         raise Exception("{0} {1}".format(resp.status_code, resp.content))
     return ret
 
-def data_from_sls(rectype, input_dict):
-    return {"record_type": rectype, 
-            "content": input_dict.get('content', ""),
-            "ttl": input_dict.get('ttl',3600),
-            "prio": input_dict.get('prio',10),
-            }
+
+def normalise(records):
+    """Return a data with structure same as which returned from API"""
+    ret = {}
+    for domain in records:
+        li = []
+        for rectype in records[domain]:
+            data = {}
+            data['record_type'] = rectype
+            recs = records[domain][rectype]
+            for recname in recs:
+                data['name'] = recname
+                data.update(recs[recname])
+            li.append(data)
+        ret[domain] = li
+    return ret
 
 
 def records_existed(name, email, token, records):
-    ret = {'name': 'existed',
-            'changes': {},
-            'result': False,
-            'comment': ''}
-
     """
+    Use returning ASAP when have any error happen. So if nothing change,
+    result is true
+
+    sls example
+
     records_exists:
       email:
       token:
@@ -102,108 +105,89 @@ def records_existed(name, email, token, records):
               content: 12.1.1.2
               ...
     """
-    ses = auth_session(email, token)
 
-    
+    ret = {'name': 'existed',
+            'changes': {},
+            'result': True,
+            'comment': ''}
+    ses = auth_session(email, token)
     existing_records = {}
     for domain in records:
         path = "/domains/{0}/records".format(domain)
         data = json.loads(ses.get(BASE_URL + path).content)
         data = [i['record'] for i in data]
         existing_records[domain] = data
-        from pprint import pprint
-    pprint(existing_records)
 
     to_update = {}
     to_create = {}
+    new_records = normalise(records)
+    id2erc = {}
     for domain in records:
         ex_records = existing_records[domain]
-        for rectype in records[domain]:
-            try:
-                recs = records[domain][rectype]
-            except KeyError:
-                pass
+        new_domain_records = new_records[domain]
+        to_update[domain] = {}
+        for nrc in new_domain_records:
+            need_create = True
+            for erc in ex_records:
+                if nrc['name'] == erc['name']:
+                    id2erc[erc['id']] = erc
+                    diff = {}
+                    for k, v in nrc.items():
+                        if erc[k] != v:
+                            diff[k] = v
 
-               #{u'content': u'yyy.hwng.info',
-               # u'created_at': u'2013-04-09T15:16:08Z',
-               # u'domain_id': 65993,
-               # u'id': 1078201,
-               # u'name': u'mail',
-               # u'parent_record_id': None,
-               # u'prio': 10,
-               # u'record_type': u'MX',
-               # u'system_record': None,
-               # u'ttl': 3600,
-               # u'updated_at': u'2013-04-09T15:16:08Z'}]}
-
-            for rec in recs:
-                need_create = True
-                for exr in ex_records:
-                    if rectype == exr['record_type'] and exr['content'] == recs[rec]['content']:
-                        to_update[domain] = exr['id']
-                        need_create = False
-                        
-                if need_create:
-                    print rectype, recs[rec]
-                    to_create[domain] = data_from_sls(rectype, recs[rec])
-
-    pprint(to_update)
-    pprint(to_create)
-
+                    if diff != {}:
+                        to_update[domain][erc['id']] = diff
+                    need_create = False
+                    break
+            if need_create:
+                if to_create == {}:
+                    to_create[domain] = []
+                to_create[domain].append(nrc)
+    log.info("To create: {0}".format(to_create))
+    log.info("To update: {0}".format(to_update))
 
     for domain in to_create:
-        path = "/domains/{0}/records".format(domain)
-        data = {"record": to_create[domain]}
-        resp = ses.post(BASE_URL + path, json.dumps(data))
-        print resp.status_code, resp.content
-#
-#
-    #data = {"record": {"name": nrecord.get('name', ''),
-    #                   "record_type": nrecord.get('record_type'),
-    #                   "content": nrecord.get('content'),
-    #                   "ttl": nrecord.get('ttl', 3600),
-    #                   "prio": nrecord.get('prio', 10),}
-    #       }
+        for r in to_create[domain]:
+            path = "/domains/{0}/records".format(domain)
+            data = {"record": r}
+            resp = ses.post(BASE_URL + path, json.dumps(data))
+            log.info("{0} {1}".format(resp.status_code, resp.content))
+            if resp.status_code == 201:
+                ret['changes']["{0}:{1}".format(domain, r['name'])] = "created"
+            elif resp.status_code == 400:
+                ret['result'] = False
+                ret['comment'] = resp.content
+                return ret
+            elif resp.status_code == 404:
+                if "Couldn\'t find Domain with name" in resp.content:
+                    ret['result'] = False
+                    ret['comment'] = "Couldn't find domain {0}".format(domain)
+                    return ret
+            else:
+                assert resp.status_code != 422
+                ret['comment'] = "{0} {1} {2}".format(domain, r,
+                                                      resp.status_code)
+                return ret
 
-    #resp = ses.post(BASE_URL + path, json.dumps(data))
-    #print resp.status_code, resp.content
-    #if resp.status_code == 201:
-    #    ret['changes'][nrecord.get('content')] = "created"
-    #    ret['result'] = True
-    #elif resp.status_code == 422:
-    #    comment = 'already exists'
-    #    getresp = ses.get(BASE_URL + path)
-    #    recs = json.loads(getresp.content)
-    #    recs = [i['record'] for i in recs]
-    #    for rec in recs:
-    #        if rec['name'] == nrecord['name'] and rec['content'] == nrecord['content']:
-    #            path = "/domains/{0}/records/{1}".format(domain, rec['id'])
-    #            putresp = ses.put(BASE_URL + path, data=json.dumps(data))
-    #            print putresp.status_code, putresp.content
-    #            break
-    #    if comment in resp.content:
-    #        ret['comment'] = comment
-    #        ret['result'] = True
-    #elif resp.status_code == 400:
-    #    ret['result'] = False
-    #    ret['comment'] = "{0}".format(resp.content)
-    #elif resp.status_code == 404:
-    #    if "Couldn\'t find Domain with name" in resp.content:
-    #        ret['result'] = False
-    #        ret['comment'] = "Couldn't find domain {0}".format(domain)
-    #else:
-    #    ret['result'] = False
-    #    ret['comment'] = "{0} {1}".format(resp.status_code, resp.content)
-    #return ret
-
-def records_exists(domain, email, token, records):
-    conn = DNSimple(email, token)
-    dom = Domain(conn, {"name": domain})
-    for rectype in records:
-        for name in records[rectype]:
-            dom.add_record(name, rectype.upper(), records[rectype][name]['content'])
-
-    return {'name': 'records_exists',
-            'changes': {},
-            'result': True,
-            'comment': ''}
+    for dom in to_update:
+        for rid in to_update[dom]:
+            path = "/domains/{0}/records/{1}".format(dom, rid)
+            record_changes = to_update[dom][rid]
+            resp = ses.put(BASE_URL + path,
+                           json.dumps({"record": record_changes}))
+            log.info("{0} {1}".format(resp.status_code, resp.content))
+            if resp.status_code == 200:
+                changes = []
+                for k, v in record_changes.items():
+                    changes.append("{0}: {1} => {2}".format(
+                                   k,
+                                   id2erc[rid][k],
+                                   json.loads(resp.content)['record'][k]))
+                ret['changes']["{0} {1}".format(dom,
+                                                id2erc[rid]['name'])] = changes
+            else:
+                ret['result'] = False
+                ret['comment'] = "{0} {1}".format(resp.status_code,
+                                                  resp.content)
+    return ret
