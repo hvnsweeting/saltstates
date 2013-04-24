@@ -17,7 +17,7 @@ mariadb_repo:
 /etc/mysql/my.cnf:
   file:
     - managed
-    - source: salt://mariadb/my.cnf
+    - source: salt://mariadb/my.cnf.jinja2
     - mode: 644
     - makedirs: True
 
@@ -34,5 +34,6 @@ mariadb-server:
     - enable: False
     - watch:
       - file: /etc/mysql/my.cnf
+      - file: /etc/mysql/debian.cnf
     - require:
       - pkg: mariadb-server
