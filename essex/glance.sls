@@ -23,38 +23,42 @@ glance-registry:
     - require:
       - pkg: glance
 
-      {#
-{% for i in ('glance-' + s for s in ('api.conf','api-paste.ini','registry.conf','registry-paste.ini'))%}
+{% for i in ('api.conf','api-paste.ini','registry.conf','registry-paste.ini')%}
+/etc/glance/glance-{{ i }}:
+  file:
+    - managed
+    - source: salt://essex/glance-{{ i }}
+    - require: 
+      - pkg: glance
 {% endfor %}
-      #}
 
-/etc/glance/glance-api.conf:
-  file:
-    - managed
-    - source: salt://essex/glance-api.conf
-    - require: 
-      - pkg: glance
-
-/etc/glance/glance-api-paste.ini:
-  file:
-    - managed
-    - source: salt://essex/glance-api-paste.ini
-    - require: 
-      - pkg: glance
-
-/etc/glance/glance-registry.conf:
-  file:
-    - managed
-    - source: salt://essex/glance-registry.conf
-    - require: 
-      - pkg: glance
-
-/etc/glance/glance-registry-paste.ini:
-  file:
-    - managed
-    - source: salt://essex/glance-registry-paste.ini
-    - require: 
-      - pkg: glance
+#/etc/glance/glance-api.conf:
+#  file:
+#    - managed
+#    - source: salt://essex/glance-api.conf
+#    - require: 
+#      - pkg: glance
+#
+#/etc/glance/glance-api-paste.ini:
+#  file:
+#    - managed
+#    - source: salt://essex/glance-api-paste.ini
+#    - require: 
+#      - pkg: glance
+#
+#/etc/glance/glance-registry.conf:
+#  file:
+#    - managed
+#    - source: salt://essex/glance-registry.conf
+#    - require: 
+#      - pkg: glance
+#
+#/etc/glance/glance-registry-paste.ini:
+#  file:
+#    - managed
+#    - source: salt://essex/glance-registry-paste.ini
+#    - require: 
+#      - pkg: glance
 
 glance_db_sync:
   cmd:
