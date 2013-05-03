@@ -1,48 +1,27 @@
 include:
   - mariadb
 
-mysql_keystone:
+{% for comp in ("keystone", "glance", "nova") %}
+mysql_{{ comp }}:
   mysql_database:
     - present
-    - name: keystone
+    - name: {{ comp }}
     - require:
       - service: mariadb-server
   mysql_user:
     - present
     - password: openstack
-    - name: keystone
+    - name: {{ comp }}
     - require:
       - service: mariadb-server
   mysql_grants:
     - present
     - grant: all privileges
-    - database: keystone.*
-    - user: keystone
-    - name: keystone
+    - database: {{ comp }}.*
+    - user: {{ comp }}
+    - name: {{ comp }}
     - require:
+      - mysql_database: mysql_{{ comp }}
+      - mysql_user: mysql_{{ comp }}
       - service: mariadb-server
-
-mysql_glance:
-  mysql_database:
-    - present
-    - name: glance
-    - require:
-      - service: mariadb-server
-  mysql_user:
-    - present
-    - password: openstack
-    - name: glance
-    - require:
-      - service: mariadb-server
-
-mysql_glance_grants:
-  mysql_grants:
-    - present
-    - grant: all privileges
-    - database: glance.*
-    - user: glance
-    - name: glance
-    - require:
-      - mysql_database: mysql_glance
-      - mysql_user: mysql_glance
-      - service: mariadb-server
+{% endfor %}
