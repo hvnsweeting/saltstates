@@ -1,0 +1,3 @@
+python-mysqldb:
+  pkg:
+    - installed
