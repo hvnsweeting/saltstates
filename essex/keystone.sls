@@ -1,13 +1,12 @@
 include: 
   - essex.sqldata
-
-python-mysqldb:
-  pkg:
-    - installed
+  - python.mysqldb
 
 keystone:
   pkg:
     - installed
+    - require:
+      - pkg: python-mysqldb
   service:
     - running
     - enable: False

@@ -1,5 +1,6 @@
 include:
   - mariadb
+  - python.mysqldb
 
 {% for comp in ("keystone", "glance", "nova") %}
 mysql_{{ comp }}:
