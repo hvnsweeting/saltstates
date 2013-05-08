@@ -35,12 +35,15 @@ nova-manage db sync:
       - file: /etc/nova/nova.conf
     - require:
       - mysql_grants: mysql_nova
+      - pkg: nova
 
 {% for s in ("nova-compute", "nova-api", "nova-scheduler", "nova-volume", "nova-cert", "nova-consoleauth") %}
 {{ s }}:
   service:
     - running
     - enable: False
+    - require:
+      - pkg: nova
 {% endfor %}
 #nova-objectstore 
 
