@@ -31,13 +31,13 @@
 # Enable the Swift and Quantum accounts by setting ENABLE_SWIFT and/or
 # ENABLE_QUANTUM environment variables.
 #
-export OS_USERNAME=admin
-export OS_PASSWORD=secrete
-export SERVICE_TOKEN=ADMINTOKEN
-export OS_TENANT_NAME=admin
-export OS_AUTH_URL=http://127.0.0.1:5000/v2.0/
-export SERVICE_ENDPOINT=http://127.0.0.1:35357/v2.0
-export OS_REGION_NAME=RegionOne
+export OS_USERNAME={{ pillar['openstack']['OS_USERNAME'] }}
+export OS_PASSWORD={{ pillar['openstack']['OS_PASSWORD'] }}
+export SERVICE_TOKEN={{ pillar['openstack']['SERVICE_TOKEN'] }}
+export OS_TENANT_NAME={{ pillar['openstack']['OS_TENANT_NAME'] }}
+export OS_AUTH_URL={{ pillar['openstack']['OS_AUTH_URL'] }}
+export SERVICE_ENDPOINT={{ pillar['openstack']['SERVICE_ENDPOINT'] }}
+export OS_REGION_NAME={{ pillar['openstack']['OS_REGION_NAME'] }}
 ENABLE_ENDPOINTS=true
 ENABLE_SWIFT=true
 # Enable creation of endpoints by setting ENABLE_ENDPOINTS environment variable.

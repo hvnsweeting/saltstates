@@ -1,4 +1,4 @@
-include: 
+include:
   - essex.sqldata
   - python.mysqldb
 
@@ -9,9 +9,11 @@ keystone:
       - pkg: python-mysqldb
   service:
     - running
-    - enable: False
+    - enable: True
     - watch:
       - file: keystone
+    - require:
+      - pkg: keystone
   file:
     - managed
     - name: /etc/keystone/keystone.conf
@@ -20,24 +22,37 @@ keystone:
     - mode: 644
     - user: root
     - group: root
+    - required_in:
+      - service: keystone
   cmd:
     - wait
     - name: 'keystone-manage db_sync'
     - watch:
       - pkg: keystone
-    - require: 
-      - file: keystone
+    - require:
       - mysql_grants: mysql_keystone
+      - service: keystone
 
 /var/lib/keystone/keystone.db:
   file:
     - absent
-    - require: 
+    - require:
       - pkg: keystone
 
-sample_data.sh:
-  cmd:
-    - script
+/usr/local/src/sample_data.sh:
+  file:
+    - managed
     - source: salt://essex/sample_data.sh
-    - require:
+    - template: jinja
+    - mode: 700
+
+./sample_data.sh:
+  cmd:
+    - wait
+    - cwd: /usr/local/src
+    - watch:
       - cmd: keystone
+    - require:
+      - file: /usr/local/src/sample_data.sh
+      - mysql_grants: mysql_keystone
+

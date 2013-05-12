@@ -1,20 +1,21 @@
 include:
   - rabbitmq
   - essex.sqldata
+  - essex.keystone
 
 nova:
   pkg:
     - installed
-    - pkgs: 
+    - pkgs:
       - nova-compute
       - nova-network
       - nova-api
-      - nova-cert 
+      - nova-cert
       - nova-compute-qemu
-      - nova-doc 
+      - nova-doc
       - nova-network
       - nova-objectstore
-      - nova-scheduler 
+      - nova-scheduler
       - nova-volume
       - novnc
       - nova-consoleauth
@@ -24,6 +25,7 @@ nova-network:
     - running
     - watch:
       - file: /etc/nova/nova.conf
+      - cmd: nova-manage db sync
     - require:
       - pkg: nova
       - service: rabbitmq-server
@@ -36,16 +38,21 @@ nova-manage db sync:
     - require:
       - mysql_grants: mysql_nova
       - pkg: nova
+      - cmd: ./sample_data.sh
 
-{% for s in ("nova-compute", "nova-api", "nova-scheduler", "nova-volume", "nova-cert", "nova-consoleauth") %}
-{{ s }}:
+nova-services:
   service:
     - running
-    - enable: False
+    - names:
+{% for s in ("nova-compute", "nova-api", "nova-scheduler", "nova-volume", "nova-cert", "nova-consoleauth", "libvirt-bin") %}
+      - {{ s }}
+{% endfor %}
     - require:
       - pkg: nova
-{% endfor %}
-#nova-objectstore 
+    - watch:
+      - cmd: nova-manage db sync
+      - file: /etc/nova/api-paste.ini
+      - file: /etc/nova/nova.conf
 
 /etc/nova/api-paste.ini:
   file:
@@ -57,3 +64,19 @@ nova-manage db sync:
     - managed
     - source: salt://essex/nova.conf
     - template: jinja
+
+/tmp/id_rsa.pub:
+  file:
+    - managed
+    - source: salt://essex/id_rsa.pub
+
+nova_allow_access_and_inject_key:
+  cmd:
+    - script
+    - source: salt://essex/nova_sec.sh
+    - template: jinja
+    - require:
+      - file: /tmp/id_rsa.pub
+      - pkg: nova
+      - cmd: nova-manage db sync
+      - service: nova-services

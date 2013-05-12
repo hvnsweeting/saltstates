@@ -1,25 +1,22 @@
 include:
   - essex.sqldata
+  - essex.keystone
 
 glance:
   pkg: 
     - installed
 
-glance-api:
+glance-services:
   service:
     - running
-    - watch:
-      - file: /etc/glance/glance-api.conf
-      - file: /etc/glance/glance-api-paste.ini
-    - require:
-      - pkg: glance
-
-glance-registry:
-  service:
-    - running
+    - names:
+      - glance-registry
+      - glance-api
     - watch:
       - file: /etc/glance/glance-registry.conf
       - file: /etc/glance/glance-registry-paste.ini
+      - file: /etc/glance/glance-api.conf
+      - file: /etc/glance/glance-api-paste.ini
     - require:
       - pkg: glance
 
@@ -30,14 +27,17 @@ glance-registry:
     - source: salt://essex/glance-{{ i }}
     - require: 
       - pkg: glance
+    - required_in:
+      - service: glance-services
 {% endfor %}
 
 glance_db_sync:
   cmd:
     - wait
     - name: 'glance-manage version_control 0 && glance-manage db_sync'
-    - watch:
-      - file: /etc/glance/glance-registry.conf
     - require:
       - mysql_grants: mysql_glance
+      - service: glance-services
+      - cmd: ./sample_data.sh
+    - watch:
       - pkg: glance
