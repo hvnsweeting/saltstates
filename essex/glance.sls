@@ -3,7 +3,7 @@ include:
   - essex.keystone
 
 glance:
-  pkg: 
+  pkg:
     - installed
 
 glance-services:
@@ -25,7 +25,7 @@ glance-services:
   file:
     - managed
     - source: salt://essex/glance-{{ i }}
-    - require: 
+    - require:
       - pkg: glance
     - required_in:
       - service: glance-services
@@ -34,7 +34,7 @@ glance-services:
 glance_db_sync:
   cmd:
     - wait
-    - name: 'glance-manage version_control 0 && glance-manage db_sync'
+    - name: 'glance-manage version_control 0 && glance-manage db_sync && service glance-api restart && service glance-registry restart'
     - require:
       - mysql_grants: mysql_glance
       - service: glance-services

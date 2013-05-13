@@ -26,6 +26,7 @@ nova-network:
     - watch:
       - file: /etc/nova/nova.conf
       - cmd: nova-manage db sync
+      - cmd: nova_network_and_inject_key
     - require:
       - pkg: nova
       - service: rabbitmq-server
@@ -70,7 +71,7 @@ nova-services:
     - managed
     - source: salt://essex/id_rsa.pub
 
-nova_allow_access_and_inject_key:
+nova_network_and_inject_key:
   cmd:
     - script
     - source: salt://essex/nova_sec.sh

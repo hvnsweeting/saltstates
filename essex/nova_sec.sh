@@ -10,3 +10,4 @@ export OS_REGION_NAME={{ pillar['openstack']['OS_REGION_NAME'] }}
 nova secgroup-list-rules default | grep -q default || nova secgroup-add-rule default tcp 22 22 0.0.0.0/0
 nova secgroup-list-rules default | grep tcp | grep -q 22 || nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0
 nova keypair-list | grep -q mykey || nova keypair-add --pub_key /tmp/id_rsa.pub mykey
+nova-manage network list | grep -q 192.168.100 || nova-manage network create private 192.168.100.0/24 1 256
