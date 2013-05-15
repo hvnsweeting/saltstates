@@ -3,4 +3,4 @@ rabbitmq-server:
     - installed
   service:
     - running
-    - enable: False
+    - enable: True

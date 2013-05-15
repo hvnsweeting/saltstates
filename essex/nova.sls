@@ -25,21 +25,30 @@ nova-network:
     - running
     - watch:
       - file: /etc/nova/nova.conf
-      - cmd: nova-manage db sync
+      - cmd: run_sync_nova
       - cmd: nova_network_and_inject_key
     - require:
       - pkg: nova
       - service: rabbitmq-server
 
-nova-manage db sync:
+/tmp/sync_nova.sh:
+  file:
+    - managed
+    - source: salt://essex/sync_nova.sh
+    - mode: 755
+
+run_sync_nova:
   cmd:
     - wait
+    - name: /tmp/sync_nova.sh
     - watch:
       - file: /etc/nova/nova.conf
     - require:
+      - file: /tmp/sync_nova.sh
       - mysql_grants: mysql_nova
       - pkg: nova
       - cmd: ./sample_data.sh
+      - service: nova-services
 
 nova-services:
   service:
@@ -50,8 +59,6 @@ nova-services:
 {% endfor %}
     - require:
       - pkg: nova
-    - watch:
-      - cmd: nova-manage db sync
       - file: /etc/nova/api-paste.ini
       - file: /etc/nova/nova.conf
 
@@ -79,5 +86,5 @@ nova_network_and_inject_key:
     - require:
       - file: /tmp/id_rsa.pub
       - pkg: nova
-      - cmd: nova-manage db sync
+      - cmd: run_sync_nova
       - service: nova-services
