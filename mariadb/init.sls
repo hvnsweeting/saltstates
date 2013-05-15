@@ -5,7 +5,7 @@ mariadb_repo:
     - keyserver: keyserver.ubuntu.com
     - name: deb http://repo.maxindo.net.id/mariadb/repo/5.5/ubuntu precise main
 
-{# Use your own files from running mysql/mariadb server. 
+{# Use your own files from running mysql/mariadb server.
    It help skipping interactive for entering root's password #}
 /etc/mysql/debian.cnf:
   file:
@@ -31,7 +31,6 @@ mariadb-server:
   service:
     - name: mysql
     - running
-    - enable: False
     - watch:
       - file: /etc/mysql/my.cnf
       - file: /etc/mysql/debian.cnf
