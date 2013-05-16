@@ -1,6 +1,3 @@
-#include:
-  # MYSQL client
-
 nova-compute:
   pkg:
     - installed
@@ -16,6 +13,7 @@ nova-compute:
   file:
     - managed
     - source: salt://essex/api-paste.ini
+    - template: jinja
 
 /etc/nova/nova.conf:
   file:
