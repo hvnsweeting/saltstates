@@ -106,7 +106,7 @@ function get_id () {
 # Tenants
 ADMIN_TENANT=$(get_id keystone tenant-create --name=admin)
 SERVICE_TENANT=$(get_id keystone tenant-create --name=service)
-DEMO_TENANT=$(get_id keystone tenant-create --name=demo)
+#DEMO_TENANT=$(get_id keystone tenant-create --name=demo)
 INVIS_TENANT=$(get_id keystone tenant-create --name=invisible_to_admin)
 
 
@@ -114,9 +114,9 @@ INVIS_TENANT=$(get_id keystone tenant-create --name=invisible_to_admin)
 ADMIN_USER=$(get_id keystone user-create --name=admin \
                                          --pass="$ADMIN_PASSWORD" \
                                          --email=admin@example.com)
-DEMO_USER=$(get_id keystone user-create --name=demo \
-                                        --pass="$ADMIN_PASSWORD" \
-                                        --email=admin@example.com)
+#DEMO_USER=$(get_id keystone user-create --name=demo \
+#                                        --pass="$ADMIN_PASSWORD" \
+#                                        --email=admin@example.com)
 
 
 # Roles
@@ -130,11 +130,11 @@ NETADMIN_ROLE=$(get_id keystone role-create --name=netadmin)
 
 # Add Roles to Users in Tenants
 keystone user-role-add --user $ADMIN_USER --role $ADMIN_ROLE --tenant_id $ADMIN_TENANT
-keystone user-role-add --user $DEMO_USER --role $MEMBER_ROLE --tenant_id $DEMO_TENANT
-keystone user-role-add --user $DEMO_USER --role $SYSADMIN_ROLE --tenant_id $DEMO_TENANT
-keystone user-role-add --user $DEMO_USER --role $NETADMIN_ROLE --tenant_id $DEMO_TENANT
-keystone user-role-add --user $DEMO_USER --role $MEMBER_ROLE --tenant_id $INVIS_TENANT
-keystone user-role-add --user $ADMIN_USER --role $ADMIN_ROLE --tenant_id $DEMO_TENANT
+#keystone user-role-add --user $DEMO_USER --role $MEMBER_ROLE --tenant_id $DEMO_TENANT
+#keystone user-role-add --user $DEMO_USER --role $SYSADMIN_ROLE --tenant_id $DEMO_TENANT
+#keystone user-role-add --user $DEMO_USER --role $NETADMIN_ROLE --tenant_id $DEMO_TENANT
+#keystone user-role-add --user $DEMO_USER --role $MEMBER_ROLE --tenant_id $INVIS_TENANT
+#keystone user-role-add --user $ADMIN_USER --role $ADMIN_ROLE --tenant_id $DEMO_TENANT
 
 # TODO(termie): these two might be dubious
 keystone user-role-add --user $ADMIN_USER --role $KEYSTONEADMIN_ROLE --tenant_id $ADMIN_TENANT
@@ -247,9 +247,9 @@ RESULT=$(keystone ec2-credentials-create --tenant_id=$ADMIN_TENANT --user=$ADMIN
 ADMIN_ACCESS=`echo "$RESULT" | grep access | awk '{print $4}'`
 ADMIN_SECRET=`echo "$RESULT" | grep secret | awk '{print $4}'`
 
-RESULT=$(keystone ec2-credentials-create --tenant_id=$DEMO_TENANT --user=$DEMO_USER)
-DEMO_ACCESS=`echo "$RESULT" | grep access | awk '{print $4}'`
-DEMO_SECRET=`echo "$RESULT" | grep secret | awk '{print $4}'`
+#RESULT=$(keystone ec2-credentials-create --tenant_id=$DEMO_TENANT --user=$DEMO_USER)
+#DEMO_ACCESS=`echo "$RESULT" | grep access | awk '{print $4}'`
+#DEMO_SECRET=`echo "$RESULT" | grep secret | awk '{print $4}'`
 
 # write the secret and access to ec2rc
 cat > $EC2RC <<EOF
