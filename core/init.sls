@@ -1,7 +1,7 @@
 core:
   pkg:
     - installed
-    - pkg:
+    - pkgs:
       - zip
       - unzip
       - vim
