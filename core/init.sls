@@ -1,11 +1,11 @@
 core:
   pkg:
     - installed
-    - names:
+    - pkg:
       - zip
       - unzip
       - vim
       - ccze
       - git
-      - iftop
       - byobu
+      - pastebinit
