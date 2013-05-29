@@ -2,9 +2,7 @@
   file:
     - managed
     - source: salt://salt/minion.jinja2
-    - mode: 644
-    - uid: root
-    - gid: root
+    - template: jinja
 
 salt-minion:
   pkg:
