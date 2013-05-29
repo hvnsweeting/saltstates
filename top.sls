@@ -1,6 +1,10 @@
 base:
-    'u1210':
-        - test
+  '*':
+    #- vim
+    - salt.minion
+#base:
+#    'u1210':
+#        - test
 #- flyspray
 #    '*':
 #- pillartest
@@ -9,7 +13,7 @@ base:
 #        - srvbase # base server : denyhosts, apt proxy
 
 #    'devserver.novalocal':
-#   - websrv 
+#   - websrv
 #        - db
 #        - proglang.python
 #        - proglang.php
