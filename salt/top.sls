@@ -1,0 +1,6 @@
+#hvn:
+#  '*':
+    #- saltlab
+bfs:
+  '*':
+    - git
