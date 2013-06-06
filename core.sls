@@ -1,7 +1,6 @@
 include:
   - git
   - vim
-  - bash
 
 linux-utils:
   pkg:
@@ -15,3 +14,4 @@ linux-utils:
       - bash
       - bash-completion
       - command-not-found
+      - tig
