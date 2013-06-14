@@ -11,7 +11,9 @@ salt_dir_create:
   cmd:
     - run
     - name: mv /srv/salt /srv/salt.old && mkdir /srv/salt
-    - only_if: test -L /srv/salt
+    - onlyif: test -L /srv/salt
+    - require:
+      - file: /etc/salt/minion
 
 /srv/salt/hvn:
   file:
@@ -33,3 +35,5 @@ salt_dir_create:
   file:
     - managed
     - source: salt://salt/top.sls
+    - require:
+      - cmd: salt_dir_create
