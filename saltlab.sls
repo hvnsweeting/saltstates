@@ -31,9 +31,7 @@ salt_dir_create:
     - require:
       - cmd: salt_dir_create
 
-/srv/salt/top.sls:
-  file:
-    - managed
-    - source: salt://salt/top.sls
-    - require:
-      - cmd: salt_dir_create
+git config --global user.name hvnsweeting && git config --global user.email "hvnsweeting@gmail.com":
+  cmd:
+    - run
+    - unless: test $(git config --get user.email) = hvnsweeting@gmail.com
