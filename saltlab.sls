@@ -31,7 +31,7 @@ salt_dir_create:
     - require:
       - cmd: salt_dir_create
 
-git config --global user.name hvnsweeting && git config --global user.email "hvnsweeting@gmail.com":
+git config --global user.name hvnsweeting && git config --global user.email "hvnsweeting@gmail.com" && git config --global push.default simple:
   cmd:
     - run
     - unless: test $(git config --get user.email) = hvnsweeting@gmail.com
