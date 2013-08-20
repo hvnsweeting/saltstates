@@ -1,0 +1,14 @@
+(require 'package)
+(package-initialize)
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("marmalade" . "http://marmalade-repo.org/packages/")
+                         ("melpa" . "http://melpa.milkbox.net/packages/")))
+
+(load-theme 'zenburn t)
+(require 'ido)
+(ido-mode t)
+(add-hook 'after-init-hook #'global-flycheck-mode)
+(require 'autopair)
+(autopair-global-mode) ;; to enable in all buffers
+(add-hook 'python-mode-hook 'auto-complete-mode)
+(add-hook 'python-mode-hook 'jedi:ac-setup)
